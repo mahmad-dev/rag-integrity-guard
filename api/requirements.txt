@@ -1,1 +1,13 @@
--r ../apps/api/requirements.txt
+# Kept in sync with apps/api/requirements.txt by hand -- this file has to be
+# self-contained because Vercel's requirements.txt parser doesn't handle
+# pip's `-r ../relative/path` include syntax (it errored: "could not parse
+# requirements.txt: Error parsing included file"). apps/api/requirements.txt
+# stays the source used for local dev/tests; this is what actually gets
+# deployed.
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.7
+chromadb>=0.5
+langchain-core>=0.3
+blake3>=0.4
+numpy>=1.26
