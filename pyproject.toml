@@ -1,6 +1,9 @@
 [tool.pytest.ini_options]
 testpaths = ["packages/rag-guard/tests", "apps/api/tests"]
 pythonpath = ["packages/rag-guard/src", "apps/api"]
+markers = [
+    "integration: hits a real external service (e.g. downloads the FEVER dataset); needs network.",
+]
 
 [tool.ruff]
 line-length = 100
@@ -14,3 +17,7 @@ select = ["E", "F", "I", "UP"]
 python_version = "3.12"
 mypy_path = "packages/rag-guard/src"
 strict = true
+
+[[tool.mypy.overrides]]
+module = ["datasets", "datasets.*", "blake3"]
+ignore_missing_imports = true

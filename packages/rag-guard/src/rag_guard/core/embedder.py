@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import hashlib
-from typing import Protocol, runtime_checkable
+from typing import Protocol, cast, runtime_checkable
 
 import numpy as np
 
@@ -59,7 +59,7 @@ def normalize_vector(vector: list[float]) -> list[float]:
     norm = np.linalg.norm(array)
     if norm == 0.0:
         return array.tolist()
-    return (array / norm).tolist()
+    return cast(list[float], (array / norm).tolist())
 
 
 def embed_and_normalize(embedder: Embedder, text: str) -> list[float]:
