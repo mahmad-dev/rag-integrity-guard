@@ -17,6 +17,7 @@ from rag_guard.core.schema import (
     ValidationResult,
     ValidationStatus,
 )
+from rag_guard.core.store import FingerprintStore, InMemoryFingerprintStore
 
 __all__ = [
     "Embedder",
@@ -35,4 +36,6 @@ __all__ = [
     "StrictnessMode",
     "ValidationResult",
     "ValidationStatus",
+    "FingerprintStore",
+    "InMemoryFingerprintStore",
 ]
