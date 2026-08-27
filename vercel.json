@@ -6,7 +6,7 @@
   "functions": {
     "apps/api/index.py": {
       "runtime": "python3.12",
-      "includeFiles": "packages/rag-guard/**"
+      "includeFiles": "{packages/rag-guard/**,apps/api/*.py,apps/api/data/**}"
     }
   },
   "rewrites": [

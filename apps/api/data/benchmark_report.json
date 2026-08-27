@@ -1,0 +1,57 @@
+{
+  "dataset": "pietrolesci/nli_fever",
+  "split": "dev",
+  "sample_size": 500,
+  "similarity_threshold": 0.9,
+  "overall_true_positive_rate": 1.0,
+  "overall_false_positive_rate": 0.0,
+  "per_attack_type": [
+    {
+      "attack_type": "none",
+      "sample_count": 125,
+      "true_positive_rate": null,
+      "counts": {
+        "true_positive": 0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "true_negative": 125
+      }
+    },
+    {
+      "attack_type": "exact_mutation",
+      "sample_count": 125,
+      "true_positive_rate": 1.0,
+      "counts": {
+        "true_positive": 125,
+        "false_negative": 0,
+        "false_positive": 0,
+        "true_negative": 0
+      }
+    },
+    {
+      "attack_type": "payload_injection",
+      "sample_count": 125,
+      "true_positive_rate": 1.0,
+      "counts": {
+        "true_positive": 125,
+        "false_negative": 0,
+        "false_positive": 0,
+        "true_negative": 0
+      }
+    },
+    {
+      "attack_type": "semantic_drift",
+      "sample_count": 125,
+      "true_positive_rate": 1.0,
+      "counts": {
+        "true_positive": 125,
+        "false_negative": 0,
+        "false_positive": 0,
+        "true_negative": 0
+      }
+    }
+  ],
+  "verification_overhead_ms_mean": 2.729462573886849,
+  "verification_overhead_ms_p95": 7.066135003697127,
+  "generated_at": "2026-08-27T16:42:26.948290Z"
+}
