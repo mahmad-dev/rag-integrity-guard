@@ -8,9 +8,7 @@ re-verifies retrieved context against that fingerprint before it reaches an LLM 
 catching retrieval poisoning and tampering. Benchmarked against a public dataset,
 with real numbers.
 
-**Live demo:** not yet deployed. See [Deployment](#deployment) to put your own up on
-Vercel's free tier.
-
+**Live demo:** https://rag-integrity-guard-1r0wict7l-mahmad-devs-projects.vercel.app/
 ## Why
 
 Standard RAG trusts whatever the vector store hands back at query time. If that
