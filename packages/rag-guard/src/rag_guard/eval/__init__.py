@@ -8,6 +8,7 @@ from rag_guard.eval.attacks import (
 from rag_guard.eval.benchmark import run_benchmark
 from rag_guard.eval.dataset import FEVER_DATASET_ID, FeverExample, load_fever_examples
 from rag_guard.eval.report import AttackTypeMetrics, BenchmarkReport, ConfusionCounts
+from rag_guard.eval.sensitivity import ThresholdRow, run_threshold_sensitivity
 
 __all__ = [
     "AttackType",
@@ -22,4 +23,6 @@ __all__ = [
     "BenchmarkReport",
     "ConfusionCounts",
     "run_benchmark",
+    "ThresholdRow",
+    "run_threshold_sensitivity",
 ]

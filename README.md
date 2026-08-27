@@ -51,6 +51,21 @@ what happens to a non-`VALID` chunk:
 | `FILTER` | Silently drops the offending chunk; the rest of the query proceeds. |
 | `LOG_ONLY` | Returns everything, annotated with its status, for auditing. |
 
+**Embedder.** The `Embedder` protocol ([`core/embedder.py`](packages/rag-guard/src/rag_guard/core/embedder.py))
+matches LangChain's `Embeddings` interface, so anything satisfying it can compute
+the semantic signature. Two implementations ship:
+
+- `HashingEmbedder` (default) — deterministic, dependency-free hashed-n-gram
+  vectors. No API key, no downloaded weights, runs anywhere at zero cost. It's
+  not a semantic model, though — see [Threshold sensitivity](#threshold-sensitivity)
+  for what that actually costs you.
+- `OpenAIEmbedder` — real semantic embeddings via a couple of plain HTTP calls
+  (no SDK dependency, so it stays out of the deployment bundle unless you use
+  it). Needs `OPENAI_API_KEY`. Deliberately *not* a locally-loaded model:
+  sentence-transformers/ONNX would drag torch or onnxruntime into a Vercel
+  serverless function and blow the size limit; an API call costs a fraction of
+  a cent and keeps the bundle tiny.
+
 ## Monorepo layout
 
 - [`packages/rag-guard`](packages/rag-guard) — the core Python package:
@@ -76,7 +91,7 @@ cd rag-integrity-guard
 # Python
 pip install -e "packages/rag-guard[eval,dev]"
 pip install -r apps/api/requirements-dev.txt
-pytest                       # 72 tests: core + langchain + eval + api
+pytest                       # 89 tests: core + langchain + eval + api
 
 # Node
 pnpm install
@@ -135,6 +150,54 @@ plausibly be less than perfect. The full report — including the per-attack-typ
 breakdown — is bundled at [`apps/api/data/benchmark_report.json`](apps/api/data/benchmark_report.json)
 and served live from `/api/benchmark`.
 
+## Threshold sensitivity
+
+TPR/FPR don't move with `similarity_threshold` — but *classification* does:
+whether a tampered chunk reads as a blunt `HASH_MISMATCH` or a disguised
+`SEMANTIC_DRIFT`. [`eval/sensitivity.py`](packages/rag-guard/src/rag_guard/eval/sensitivity.py)
+holds one tampered FEVER corpus fixed (300 samples) and sweeps only the
+threshold, isolating that effect from randomness in the attacks themselves:
+
+```bash
+python -m rag_guard.eval.run_sensitivity --sample-size 300 \
+  --output apps/api/data/sensitivity_report.json
+```
+
+| Threshold | Exact mutation | Payload injection | Semantic drift |
+|---|---|---|---|
+| 0.50 | 100% drift | 100% drift | 0% drift |
+| 0.70 | 100% drift | 92% drift | 0% drift |
+| 0.90 (default) | 70% drift | 51% drift | 0% drift |
+| 0.95 | 5% drift | 22% drift | 0% drift |
+| 0.99 | 0% drift | 0% drift | 0% drift |
+
+("% drift" = classified `SEMANTIC_DRIFT` rather than `HASH_MISMATCH`; mean
+cosine similarity to the original was 0.911 for exact mutation, 0.877 for
+payload injection, **0.155 for semantic drift**.)
+
+**The honest, slightly uncomfortable finding here:** the "semantic drift" attack
+— a wholesale swap to a different, topically-plausible passage, meant to be the
+*sneakiest* one — is the one `HashingEmbedder` is worst at reading as similar.
+It's a hashed-character-n-gram vector, so it tracks lexical overlap, not
+meaning: a few flipped characters (exact mutation) leaves most n-grams intact
+and scores high; swapping to an entirely different sentence leaves almost none
+intact and scores low, *regardless of how semantically related the two
+passages actually are to a person or a real embedding model*. In other words,
+the default embedder's classification is doing something closer to "how much
+text literally changed" than "does this still mean roughly the same thing" —
+useful, deterministic, zero-cost, but not what "semantic" usually implies.
+
+`OpenAIEmbedder` exists specifically so that question can be answered for
+real: does a genuine semantic model get *more* confused by the wholesale-swap
+case (because it correctly perceives topical/stylistic similarity where
+n-gram hashing can't), pushing semantic-drift attacks toward the dangerous,
+easily-missed end of the threshold curve instead of the easy end? That
+comparison needs an API key I don't have wired into this environment — set
+`OPENAI_API_KEY` and swap `HashingEmbedder()` for `OpenAIEmbedder()` in the
+sweep above to find out. I'd genuinely expect the semantic-drift column to
+look worse, not better, with a real model — which is the more important
+number for a poisoning defense to get right.
+
 ## API reference
 
 All endpoints are under `/api`. See [`apps/api/schemas.py`](apps/api/schemas.py)
@@ -168,7 +231,7 @@ ruff check packages/rag-guard apps/api    # lint
 mypy packages/rag-guard/src apps/api/*.py # types (strict)
 ```
 
-72 tests, 97% coverage excluding the one network-gated code path (the actual
+89 tests, >96% coverage excluding the one network-gated code path (the actual
 Hugging Face download, covered separately by the `integration`-marked test).
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs ruff, mypy, and pytest
 against Python 3.11 and 3.12, plus `pnpm lint`/`pnpm build` for the dashboard, on

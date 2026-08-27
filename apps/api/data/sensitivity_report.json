@@ -1,0 +1,191 @@
+[
+  {
+    "similarity_threshold": 0.5,
+    "attack_type": "exact_mutation",
+    "sample_count": 100,
+    "classified_semantic_drift": 100,
+    "classified_hash_mismatch": 0,
+    "mean_similarity": 0.9113716353671684,
+    "median_similarity": 0.9129665891758469
+  },
+  {
+    "similarity_threshold": 0.5,
+    "attack_type": "payload_injection",
+    "sample_count": 100,
+    "classified_semantic_drift": 100,
+    "classified_hash_mismatch": 0,
+    "mean_similarity": 0.8771399443653887,
+    "median_similarity": 0.9010092560582403
+  },
+  {
+    "similarity_threshold": 0.5,
+    "attack_type": "semantic_drift",
+    "sample_count": 100,
+    "classified_semantic_drift": 0,
+    "classified_hash_mismatch": 100,
+    "mean_similarity": 0.15490219468908467,
+    "median_similarity": 0.14457904748362096
+  },
+  {
+    "similarity_threshold": 0.6,
+    "attack_type": "exact_mutation",
+    "sample_count": 100,
+    "classified_semantic_drift": 100,
+    "classified_hash_mismatch": 0,
+    "mean_similarity": 0.9113716353671684,
+    "median_similarity": 0.9129665891758469
+  },
+  {
+    "similarity_threshold": 0.6,
+    "attack_type": "payload_injection",
+    "sample_count": 100,
+    "classified_semantic_drift": 99,
+    "classified_hash_mismatch": 1,
+    "mean_similarity": 0.8771399443653887,
+    "median_similarity": 0.9010092560582403
+  },
+  {
+    "similarity_threshold": 0.6,
+    "attack_type": "semantic_drift",
+    "sample_count": 100,
+    "classified_semantic_drift": 0,
+    "classified_hash_mismatch": 100,
+    "mean_similarity": 0.15490219468908467,
+    "median_similarity": 0.14457904748362096
+  },
+  {
+    "similarity_threshold": 0.7,
+    "attack_type": "exact_mutation",
+    "sample_count": 100,
+    "classified_semantic_drift": 100,
+    "classified_hash_mismatch": 0,
+    "mean_similarity": 0.9113716353671684,
+    "median_similarity": 0.9129665891758469
+  },
+  {
+    "similarity_threshold": 0.7,
+    "attack_type": "payload_injection",
+    "sample_count": 100,
+    "classified_semantic_drift": 92,
+    "classified_hash_mismatch": 8,
+    "mean_similarity": 0.8771399443653887,
+    "median_similarity": 0.9010092560582403
+  },
+  {
+    "similarity_threshold": 0.7,
+    "attack_type": "semantic_drift",
+    "sample_count": 100,
+    "classified_semantic_drift": 0,
+    "classified_hash_mismatch": 100,
+    "mean_similarity": 0.15490219468908467,
+    "median_similarity": 0.14457904748362096
+  },
+  {
+    "similarity_threshold": 0.8,
+    "attack_type": "exact_mutation",
+    "sample_count": 100,
+    "classified_semantic_drift": 100,
+    "classified_hash_mismatch": 0,
+    "mean_similarity": 0.9113716353671684,
+    "median_similarity": 0.9129665891758469
+  },
+  {
+    "similarity_threshold": 0.8,
+    "attack_type": "payload_injection",
+    "sample_count": 100,
+    "classified_semantic_drift": 83,
+    "classified_hash_mismatch": 17,
+    "mean_similarity": 0.8771399443653887,
+    "median_similarity": 0.9010092560582403
+  },
+  {
+    "similarity_threshold": 0.8,
+    "attack_type": "semantic_drift",
+    "sample_count": 100,
+    "classified_semantic_drift": 0,
+    "classified_hash_mismatch": 100,
+    "mean_similarity": 0.15490219468908467,
+    "median_similarity": 0.14457904748362096
+  },
+  {
+    "similarity_threshold": 0.9,
+    "attack_type": "exact_mutation",
+    "sample_count": 100,
+    "classified_semantic_drift": 70,
+    "classified_hash_mismatch": 30,
+    "mean_similarity": 0.9113716353671684,
+    "median_similarity": 0.9129665891758469
+  },
+  {
+    "similarity_threshold": 0.9,
+    "attack_type": "payload_injection",
+    "sample_count": 100,
+    "classified_semantic_drift": 51,
+    "classified_hash_mismatch": 49,
+    "mean_similarity": 0.8771399443653887,
+    "median_similarity": 0.9010092560582403
+  },
+  {
+    "similarity_threshold": 0.9,
+    "attack_type": "semantic_drift",
+    "sample_count": 100,
+    "classified_semantic_drift": 0,
+    "classified_hash_mismatch": 100,
+    "mean_similarity": 0.15490219468908467,
+    "median_similarity": 0.14457904748362096
+  },
+  {
+    "similarity_threshold": 0.95,
+    "attack_type": "exact_mutation",
+    "sample_count": 100,
+    "classified_semantic_drift": 5,
+    "classified_hash_mismatch": 95,
+    "mean_similarity": 0.9113716353671684,
+    "median_similarity": 0.9129665891758469
+  },
+  {
+    "similarity_threshold": 0.95,
+    "attack_type": "payload_injection",
+    "sample_count": 100,
+    "classified_semantic_drift": 22,
+    "classified_hash_mismatch": 78,
+    "mean_similarity": 0.8771399443653887,
+    "median_similarity": 0.9010092560582403
+  },
+  {
+    "similarity_threshold": 0.95,
+    "attack_type": "semantic_drift",
+    "sample_count": 100,
+    "classified_semantic_drift": 0,
+    "classified_hash_mismatch": 100,
+    "mean_similarity": 0.15490219468908467,
+    "median_similarity": 0.14457904748362096
+  },
+  {
+    "similarity_threshold": 0.99,
+    "attack_type": "exact_mutation",
+    "sample_count": 100,
+    "classified_semantic_drift": 0,
+    "classified_hash_mismatch": 100,
+    "mean_similarity": 0.9113716353671684,
+    "median_similarity": 0.9129665891758469
+  },
+  {
+    "similarity_threshold": 0.99,
+    "attack_type": "payload_injection",
+    "sample_count": 100,
+    "classified_semantic_drift": 0,
+    "classified_hash_mismatch": 100,
+    "mean_similarity": 0.8771399443653887,
+    "median_similarity": 0.9010092560582403
+  },
+  {
+    "similarity_threshold": 0.99,
+    "attack_type": "semantic_drift",
+    "sample_count": 100,
+    "classified_semantic_drift": 0,
+    "classified_hash_mismatch": 100,
+    "mean_similarity": 0.15490219468908467,
+    "median_similarity": 0.14457904748362096
+  }
+]

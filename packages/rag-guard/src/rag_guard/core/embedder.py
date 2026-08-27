@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 from typing import Protocol, cast, runtime_checkable
 
 import numpy as np
@@ -52,6 +53,62 @@ class HashingEmbedder:
 
     def embed_documents(self, texts: list[str]) -> list[list[float]]:
         return [self.embed_query(text) for text in texts]
+
+
+class OpenAIEmbedder:
+    """Real semantic embeddings via OpenAI's Embeddings API.
+
+    Deliberately dependency-light -- a couple of plain HTTP calls (`httpx`,
+    imported lazily so it's only required if this class is actually used),
+    not the `openai` SDK and definitely not a locally-loaded model. A local
+    sentence-transformers/ONNX model would be "free" per call but drags
+    torch or onnxruntime into the deployment bundle; for a Vercel serverless
+    function that's the difference between deploying and blowing the
+    function size limit. An HTTP call costs a fraction of a cent and keeps
+    the bundle tiny.
+
+    Requires `OPENAI_API_KEY` (or pass `api_key=`).
+    """
+
+    def __init__(
+        self,
+        model: str = "text-embedding-3-small",
+        *,
+        api_key: str | None = None,
+        base_url: str = "https://api.openai.com/v1",
+        timeout: float = 30.0,
+    ) -> None:
+        self.model = model
+        self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
+        if not self.api_key:
+            raise ValueError(
+                "OpenAIEmbedder requires an API key: pass api_key=... or set "
+                "the OPENAI_API_KEY environment variable."
+            )
+        self.base_url = base_url.rstrip("/")
+        self.timeout = timeout
+
+    def embed_documents(self, texts: list[str]) -> list[list[float]]:
+        return self._embed(texts)
+
+    def embed_query(self, text: str) -> list[float]:
+        return self._embed([text])[0]
+
+    def _embed(self, texts: list[str]) -> list[list[float]]:
+        import httpx
+
+        response = httpx.post(
+            f"{self.base_url}/embeddings",
+            headers={"Authorization": f"Bearer {self.api_key}"},
+            json={"model": self.model, "input": texts},
+            timeout=self.timeout,
+        )
+        response.raise_for_status()
+        items = response.json()["data"]
+        # The API returns embeddings in input order, but sort defensively on
+        # the index it echoes back rather than trusting that.
+        ordered = sorted(items, key=lambda item: item["index"])
+        return [item["embedding"] for item in ordered]
 
 
 def normalize_vector(vector: list[float]) -> list[float]:

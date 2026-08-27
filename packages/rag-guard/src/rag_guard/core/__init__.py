@@ -1,6 +1,7 @@
 from rag_guard.core.embedder import (
     Embedder,
     HashingEmbedder,
+    OpenAIEmbedder,
     cosine_similarity,
     embed_and_normalize,
     normalize_vector,
@@ -22,6 +23,7 @@ from rag_guard.core.store import FingerprintStore, InMemoryFingerprintStore
 __all__ = [
     "Embedder",
     "HashingEmbedder",
+    "OpenAIEmbedder",
     "cosine_similarity",
     "embed_and_normalize",
     "normalize_vector",
