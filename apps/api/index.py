@@ -11,10 +11,10 @@ _RAG_GUARD_SRC = Path(__file__).resolve().parents[2] / "packages" / "rag-guard" 
 if _RAG_GUARD_SRC.exists() and str(_RAG_GUARD_SRC) not in sys.path:
     sys.path.insert(0, str(_RAG_GUARD_SRC))
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI  # noqa: E402
+from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 
-from rag_guard import __version__ as rag_guard_version
+from rag_guard import __version__ as rag_guard_version  # noqa: E402
 
 app = FastAPI(
     title="rag-integrity-guard API",

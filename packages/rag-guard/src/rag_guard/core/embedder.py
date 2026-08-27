@@ -1,0 +1,76 @@
+from __future__ import annotations
+
+import hashlib
+from typing import Protocol, runtime_checkable
+
+import numpy as np
+
+from rag_guard.core.hasher import normalize_text
+
+
+@runtime_checkable
+class Embedder(Protocol):
+    """Structural interface matching LangChain's `Embeddings` ABC, so any
+    LangChain embeddings instance (OpenAI, HuggingFace, etc.) satisfies it
+    without a hard dependency on `langchain`."""
+
+    def embed_documents(self, texts: list[str]) -> list[list[float]]: ...
+
+    def embed_query(self, text: str) -> list[float]: ...
+
+
+class HashingEmbedder:
+    """Deterministic, dependency-free embedder using hashed character n-gram
+    features (the "hashing trick"). It is not a semantic model — it exists so
+    the guard has a zero-cost, offline default that needs no API key or
+    downloaded weights. Swap in a real `Embeddings` implementation (via
+    LangChain) for production-grade semantic drift detection.
+    """
+
+    def __init__(self, dimensions: int = 256, ngram_range: tuple[int, int] = (3, 5)) -> None:
+        self.dimensions = dimensions
+        self.ngram_range = ngram_range
+
+    def _ngrams(self, text: str) -> list[str]:
+        normalized = normalize_text(text).lower()
+        lo, hi = self.ngram_range
+        grams = [
+            normalized[i : i + n]
+            for n in range(lo, hi + 1)
+            for i in range(len(normalized) - n + 1)
+        ]
+        return grams or [normalized]
+
+    def embed_query(self, text: str) -> list[float]:
+        vector = np.zeros(self.dimensions, dtype=np.float64)
+        for gram in self._ngrams(text):
+            digest = hashlib.sha256(gram.encode("utf-8")).digest()
+            index = int.from_bytes(digest[:8], "big") % self.dimensions
+            sign = 1.0 if digest[8] % 2 == 0 else -1.0
+            vector[index] += sign
+        return vector.tolist()
+
+    def embed_documents(self, texts: list[str]) -> list[list[float]]:
+        return [self.embed_query(text) for text in texts]
+
+
+def normalize_vector(vector: list[float]) -> list[float]:
+    array = np.asarray(vector, dtype=np.float64)
+    norm = np.linalg.norm(array)
+    if norm == 0.0:
+        return array.tolist()
+    return (array / norm).tolist()
+
+
+def embed_and_normalize(embedder: Embedder, text: str) -> list[float]:
+    """The chunk's "semantic vector signature": its embedding, L2-normalized
+    so cosine similarity reduces to a dot product at comparison time."""
+    return normalize_vector(embedder.embed_query(text))
+
+
+def cosine_similarity(a: list[float], b: list[float]) -> float:
+    va, vb = np.asarray(a, dtype=np.float64), np.asarray(b, dtype=np.float64)
+    denom = float(np.linalg.norm(va) * np.linalg.norm(vb))
+    if denom == 0.0:
+        return 0.0
+    return float(np.dot(va, vb) / denom)
