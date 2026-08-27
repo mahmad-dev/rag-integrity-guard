@@ -12,6 +12,20 @@
     --muted-foreground: 215 16% 47%;
     --border: 214 32% 91%;
     --radius: 0.5rem;
+
+    /* Status palette (fixed -- never themed; same steps in light and dark) */
+    --status-good: #0ca30c;
+    --status-warning: #fab219;
+    --status-serious: #ec835a;
+    --status-critical: #d03b3b;
+
+    /* Categorical series (attack types in the benchmark chart) -- light steps */
+    --series-1: #2a78d6; /* exact_mutation */
+    --series-2: #eb6834; /* payload_injection */
+    --series-3: #1baf7a; /* semantic_drift */
+
+    --chart-grid: #e1e0d9;
+    --chart-baseline: #c3c2b7;
   }
 
   .dark {
@@ -22,6 +36,14 @@
     --muted: 217 33% 15%;
     --muted-foreground: 215 20% 65%;
     --border: 217 33% 20%;
+
+    /* Categorical series -- dark steps (status palette stays the same) */
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+
+    --chart-grid: #2c2c2a;
+    --chart-baseline: #383835;
   }
 
   * {
