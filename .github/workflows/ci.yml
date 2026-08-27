@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python:
+    name: python (${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install rag-guard (+ eval, dev extras)
+        run: pip install -e "packages/rag-guard[eval,dev]"
+
+      - name: Install apps/api dependencies
+        run: pip install -r apps/api/requirements-dev.txt
+
+      - name: ruff
+        run: ruff check packages/rag-guard apps/api
+
+      - name: mypy
+        run: mypy packages/rag-guard/src apps/api/*.py
+
+      - name: pytest (unit + component, no network)
+        run: |
+          pytest -m "not integration" \
+            --cov=rag_guard --cov=index --cov=state --cov=chroma_retriever --cov=schemas \
+            --cov-report=term-missing --cov-fail-under=90
+
+      # Exercises the real Hugging Face download end to end. Kept separate
+      # and non-blocking: it's genuinely useful signal, but an HF Hub
+      # hiccup or unauthenticated-request rate limit shouldn't fail CI.
+      - name: pytest (integration, network -- non-blocking)
+        if: matrix.python-version == '3.12'
+        continue-on-error: true
+        run: pytest -m integration -q
+
+  web:
+    name: web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile=false
+
+      - name: lint
+        run: pnpm lint
+
+      - name: build
+        run: pnpm build

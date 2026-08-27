@@ -9,7 +9,10 @@ from pathlib import Path
 
 _RAG_GUARD_SRC = Path(__file__).resolve().parents[2] / "packages" / "rag-guard" / "src"
 if _RAG_GUARD_SRC.exists() and str(_RAG_GUARD_SRC) not in sys.path:
-    sys.path.insert(0, str(_RAG_GUARD_SRC))
+    # Under pytest (see pyproject.toml [tool.pytest.ini_options]), this path
+    # is already on sys.path before index.py is ever imported, so this
+    # branch only fires in the actual Vercel deployment.
+    sys.path.insert(0, str(_RAG_GUARD_SRC))  # pragma: no cover
 
 import random  # noqa: E402
 

@@ -21,3 +21,10 @@ strict = true
 [[tool.mypy.overrides]]
 module = ["datasets", "datasets.*", "blake3"]
 ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["packages/rag-guard/src/rag_guard", "apps/api"]
+omit = ["*/tests/*"]
+
+[tool.coverage.report]
+exclude_also = ["if __name__ == .__main__.:"]

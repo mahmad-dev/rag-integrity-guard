@@ -48,3 +48,8 @@ def test_normalize_text_unifies_unicode_forms() -> None:
 
 def test_whitespace_only_diffs_do_not_change_hash() -> None:
     assert compute_hash("hello world") == compute_hash("  hello world  ")
+
+
+def test_compute_hash_rejects_unsupported_algorithm() -> None:
+    with pytest.raises(ValueError, match="Unsupported hash algorithm"):
+        compute_hash("hello", algorithm="md5")  # type: ignore[arg-type]

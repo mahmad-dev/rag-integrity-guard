@@ -51,6 +51,10 @@ def test_cosine_similarity_orthogonal_vectors_is_zero() -> None:
     assert cosine_similarity([1.0, 0.0], [0.0, 1.0]) == 0.0
 
 
+def test_cosine_similarity_zero_vector_is_zero() -> None:
+    assert cosine_similarity([0.0, 0.0], [1.0, 1.0]) == 0.0
+
+
 def test_cosine_similarity_similar_texts_score_higher_than_unrelated() -> None:
     embedder = HashingEmbedder()
     original = embed_and_normalize(

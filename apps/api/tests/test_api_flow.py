@@ -1,8 +1,10 @@
 import pytest
 from fastapi.testclient import TestClient
 
+import index as index_module
 import state as state_module
 from index import app
+from rag_guard.core.embedder import embed_and_normalize
 
 client = TestClient(app)
 
@@ -122,3 +124,31 @@ def test_benchmark_returns_precomputed_report() -> None:
     assert body["overall_true_positive_rate"] == 1.0
     assert body["overall_false_positive_rate"] == 0.0
     assert len(body["per_attack_type"]) == 4
+
+
+def test_benchmark_503s_when_no_report_is_bundled(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr(index_module, "_BENCHMARK_REPORT_PATH", tmp_path / "missing.json")
+
+    response = client.get("/api/benchmark")
+
+    assert response.status_code == 503
+
+
+def test_attack_on_a_chunk_with_no_fingerprint_reports_missing_fingerprint() -> None:
+    state = state_module.get_state()
+    text = "A chunk that made it into the vector store without ever being fingerprinted."
+    state.collection.add(
+        ids=["orphan:0"],
+        documents=[text],
+        embeddings=[embed_and_normalize(state.embedder, text)],
+        metadatas=[{"chunk_id": "orphan:0"}],
+    )
+
+    response = client.post(
+        "/api/attack", json={"chunk_id": "orphan:0", "attack_type": "exact_mutation"}
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["resulting_status"] == "missing_fingerprint"
+    assert body["resulting_similarity"] is None

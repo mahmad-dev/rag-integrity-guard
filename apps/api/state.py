@@ -12,6 +12,8 @@ real entrypoint, sets that up before importing this module).
 
 from __future__ import annotations
 
+import uuid
+
 import chromadb
 from chromadb.api import ClientAPI
 from chromadb.api.models.Collection import Collection
@@ -19,12 +21,12 @@ from chromadb.api.models.Collection import Collection
 from rag_guard.core.embedder import Embedder, HashingEmbedder
 from rag_guard.core.store import InMemoryFingerprintStore
 
-COLLECTION_NAME = "rag_guard_documents"
+COLLECTION_NAME_PREFIX = "rag_guard_documents"
 
 
-def _new_collection(client: ClientAPI) -> Collection:
+def _new_collection(client: ClientAPI, name: str) -> Collection:
     collection: Collection = client.get_or_create_collection(
-        COLLECTION_NAME,
+        name,
         embedding_function=None,  # we supply our own embeddings, computed via `embedder`
         metadata={"hnsw:space": "cosine"},
     )
@@ -36,11 +38,18 @@ class AppState:
         self.embedder: Embedder = HashingEmbedder()
         self.fingerprint_store = InMemoryFingerprintStore()
         self._client = chromadb.EphemeralClient()
-        self.collection: Collection = _new_collection(self._client)
+        # chromadb's EphemeralClient caches its in-memory backend per process
+        # keyed by settings, not per client instance -- two EphemeralClient()
+        # calls with the same collection name silently share state. A unique
+        # per-instance name keeps separate AppState instances (e.g. in tests)
+        # genuinely isolated; the real app only ever has one live instance
+        # (see get_state), so this is invisible in production.
+        self._collection_name = f"{COLLECTION_NAME_PREFIX}_{uuid.uuid4().hex[:8]}"
+        self.collection: Collection = _new_collection(self._client, self._collection_name)
 
     def reset(self) -> None:
-        self._client.delete_collection(COLLECTION_NAME)
-        self.collection = _new_collection(self._client)
+        self._client.delete_collection(self._collection_name)
+        self.collection = _new_collection(self._client, self._collection_name)
         self.fingerprint_store = InMemoryFingerprintStore()
 
 

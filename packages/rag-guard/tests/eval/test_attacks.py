@@ -1,5 +1,7 @@
 import random
 
+import pytest
+
 from rag_guard.eval.attacks import (
     AttackType,
     apply_attack,
@@ -45,6 +47,11 @@ def test_semantic_drift_falls_back_to_original_without_alternatives() -> None:
 
 def test_apply_attack_none_is_identity() -> None:
     assert apply_attack(AttackType.NONE, LONG_TEXT, rng=random.Random(4)) == LONG_TEXT
+
+
+def test_apply_attack_rejects_unknown_attack_type() -> None:
+    with pytest.raises(ValueError, match="Unknown attack type"):
+        apply_attack("not_a_real_attack", LONG_TEXT, rng=random.Random(6))  # type: ignore[arg-type]
 
 
 def test_apply_attack_dispatches_to_each_attack_type() -> None:

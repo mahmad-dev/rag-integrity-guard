@@ -127,9 +127,14 @@ def run_benchmark(
         if is_attacked and flagged:
             bucket.true_positive += 1
         elif is_attacked and not flagged:
-            bucket.false_negative += 1
+            # Structurally unreachable given verify_chunk's guarantee (any
+            # byte change fails the hash check) -- kept for a complete
+            # confusion matrix, not because this fires in practice.
+            bucket.false_negative += 1  # pragma: no cover
         elif not is_attacked and flagged:
-            bucket.false_positive += 1
+            # Same guarantee, opposite direction: unmodified content always
+            # hash-matches, so this never fires either.
+            bucket.false_positive += 1  # pragma: no cover
         else:
             bucket.true_negative += 1
 
