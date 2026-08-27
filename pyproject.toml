@@ -1,0 +1,16 @@
+[tool.pytest.ini_options]
+testpaths = ["packages/rag-guard/tests", "apps/api/tests"]
+pythonpath = ["packages/rag-guard/src", "apps/api"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["packages/rag-guard/src", "apps/api"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.mypy]
+python_version = "3.12"
+mypy_path = "packages/rag-guard/src"
+strict = true

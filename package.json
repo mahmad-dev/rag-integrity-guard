@@ -1,0 +1,13 @@
+{
+  "name": "rag-integrity-guard",
+  "private": true,
+  "packageManager": "pnpm@9.12.0",
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "lint": "pnpm --filter web lint"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

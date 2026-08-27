@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rag-guard"
+version = "0.1.0"
+description = "Security middleware that fingerprints RAG context at ingestion and re-verifies it before it reaches an LLM."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [{ name = "Muhammad Ahmad" }]
+dependencies = [
+    "langchain-core>=0.3",
+    "pydantic>=2.7",
+    "blake3>=0.4",
+    "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+eval = [
+    "datasets>=2.19",
+    "scikit-learn>=1.4",
+]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+    "mypy>=1.10",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rag_guard"]
