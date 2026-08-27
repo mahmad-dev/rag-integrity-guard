@@ -239,16 +239,41 @@ every push and pull request.
 
 ## Deployment
 
-The root [`vercel.json`](vercel.json) is configured for a single Vercel project
-covering both apps: `apps/web` builds as the Next.js site, `apps/api/index.py`
-deploys as a Python serverless function, and `/api/*` is rewritten straight to it
-— no separate backend deployment needed.
+Deployed as **two Vercel projects**, not one. A single project forcing both a
+Next.js build and a Python function through one custom `buildCommand` loses
+Vercel's Next.js framework detection ("No framework detected") and ends up
+serving the raw `.next` build as static files, which 404s at `/` — Next.js
+needs Vercel's actual Next.js runtime, not a static copy of its build cache.
+Two ordinary, independently-boring deployments avoid that entirely.
+
+**1. API** — repo root, [`vercel.json`](vercel.json) configures the Python
+function (`api/index.py`, a thin re-export of `apps/api/index.py` — Vercel's
+Python function auto-discovery only scans a top-level `/api` directory) and
+rewrites `/api/*` to it:
 
 ```bash
 npm i -g vercel
-vercel link      # connect this repo to a Vercel project
+vercel login
+cd "path/to/rag-integrity-guard"     # repo root
+vercel link                          # create/link a project here
 vercel --prod
 ```
+
+**2. Web** — deployed separately from `apps/web`, so Vercel auto-detects it as
+a normal Next.js app (no vercel.json needed there):
+
+```bash
+cd apps/web
+vercel link                          # create a *second*, separate project
+vercel env add NEXT_PUBLIC_API_BASE_URL production
+# paste the API project's URL from step 1, e.g. https://rag-integrity-guard.vercel.app
+vercel --prod
+```
+
+Without that env var the web app defaults to relative `/api/*` fetches, which
+only work when both are the same origin — with two projects they aren't, so
+it has to be set explicitly in production (CORS is already open on the API
+side for this).
 
 Note the [state caveat](#api-reference) above: this deploys a working, zero-cost
 demo, not a production-durable store.

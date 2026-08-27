@@ -1,8 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "cd apps/web && pnpm install --frozen-lockfile=false && pnpm build",
-  "installCommand": "pnpm install --frozen-lockfile=false",
-  "outputDirectory": "apps/web/.next",
   "functions": {
     "api/index.py": {
       "includeFiles": "{packages/rag-guard/**,apps/api/*.py,apps/api/data/**}"
