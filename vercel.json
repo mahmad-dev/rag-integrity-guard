@@ -4,11 +4,11 @@
   "installCommand": "pnpm install --frozen-lockfile=false",
   "outputDirectory": "apps/web/.next",
   "functions": {
-    "apps/api/index.py": {
+    "api/index.py": {
       "includeFiles": "{packages/rag-guard/**,apps/api/*.py,apps/api/data/**}"
     }
   },
   "rewrites": [
-    { "source": "/api/:path*", "destination": "/apps/api/index.py" }
+    { "source": "/api/:path*", "destination": "/api/index.py" }
   ]
 }

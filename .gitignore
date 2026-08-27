@@ -40,3 +40,5 @@ dist/
 .chroma/
 rag_guard/eval/data/
 *.sqlite3
+.vercel
+.env*
