@@ -8,8 +8,9 @@ re-verifies retrieved context against that fingerprint before it reaches an LLM 
 catching retrieval poisoning and tampering. Benchmarked against a public dataset,
 with real numbers.
 
-**Live demo:** not yet deployed. See [Deployment](#deployment) to put your own up on
-Vercel's free tier.
+**Live demo:** [rag-integrity-guard-1r0wict7l-mahmad-devs-projects.vercel.app](https://rag-integrity-guard-1r0wict7l-mahmad-devs-projects.vercel.app/)
+— run the attack simulator and the FEVER benchmark yourself. See [Deployment](#deployment)
+to put your own up on Vercel's free tier.
 
 ## Why
 
